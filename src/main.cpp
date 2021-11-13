@@ -4,11 +4,12 @@
 using namespace UNITREE_LEGGED_SDK;
 
 class Instruction {
-protected:
-    virtual std::pair<HighCmd, float> update(HighState state);
+public:
+    virtual std::pair<HighCmd, float> update(HighState state) {return {{0}, 0};};
 };
 
-class Forward : Instruction {
+class Forward : public Instruction {
+public:
     float d;
     
     Forward(float meters) :d{meters} {}
@@ -18,17 +19,18 @@ class Forward : Instruction {
 	HighCmd cmd {0};
 	cmd.mode = 2;
 	float v_0 = state.forwardSpeed;
-        float t = d/v_0;	
+        float t = d/v_0;
+	return {cmd, t};
     }
+    
 };
 
-class Rotate : Instruction {
-    HighCmd update(HighState state)
-    {
-	// 
-    }
-};
-
+// class Rotate : Instruction {
+//     std::HighCmd update(HighState state)
+//     {
+// 	// 
+//     }
+// };
 
 class Bot
 {
@@ -39,7 +41,7 @@ private:
     HighState state = {0};
     int motiontime = 0;
     float dt = 0.002;     // 0.001~0.01
-    std::vector<Instruction> instructions;
+    std::vector<Instruction*> instructions;
     
     void UDPRecv();
     void UDPSend();
@@ -69,22 +71,20 @@ void Bot::RobotControl()
     motiontime += 2;
     udp.GetRecv(state);
     int prev_end = 0;
-    for (Instruction i : instructions) {
-	auto out = i.update(state);
-	if (motiontime > prev_end && motiontime << prev_end + out.first) {
-	    cmd = out.second;
+    for (Instruction* i : instructions) {
+	auto out = i->update(state);
+	if (motiontime > prev_end && motiontime < prev_end + out.second) {
+	    cmd = out.first;
 	}
     }
     udp.SetSend(cmd);
 }
 
-void Bot::forward(float distance) {
-    instructions.push_back(Forward(distance));
+void Bot::forward(float distance) { 
+    instructions.push_back(new Forward(distance)); // Super hacky.
 }
 
-int main() {
-    Bot::new();
-    Bot::forward(5);
-    Bot::rotate(60);
-    Bot::forward(2);
+int main() {    
+    Bot b(HIGHLEVEL);
+    b.forward(5);
 }
