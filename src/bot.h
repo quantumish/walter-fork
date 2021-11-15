@@ -24,16 +24,22 @@ using Instruction = std::function<InstructionData(HighState, HighState)>;
  */
 class Bot
 {
-    Safety safe;
-    UDP udp;
-    HighCmd cmd = {0};
-    HighState state = {0};
-    HighState initial_state = {0};
-    int motiontime = 0;
-    float dt = 0.002;     // 0.001~0.01
+    Safety safe; //!< Specifies operation mode?
+    UDP udp; //!< UDP struct that stores payloads to send/recv.
+    HighCmd cmd = {0}; //!< Command to issue to robot's UDP server.
+    HighState state = {0}; //!< State recieved from robot's UDP server.
+    HighState initial_state = {0}; //!< Initial state of current instruction. @see Bot::RobotControl
+    int motiontime = 0; //!< Amount of time that has passed.
+    float dt = 0.002; //!< Timestep for threads. Allowed range: 0.001~0.01.   
+    int index = 0; //!< Index of current instruction to execute.   
+    bool executing = false; //!< Whether or not an instruction is in progress.
+
+    /** 
+     * List of Instructions to be executed sequentially by the A1.
+     * @see Bot::RobotControl()
+     * @see Instruction
+     */
     std::vector<Instruction> instructions;
-    int index = 0;
-    bool executing = false;
     
     /** 
      * Updates internal UDP struct.
@@ -52,6 +58,7 @@ class Bot
      * Ran repeatedly in a thread at runtime. @see Bot::execute()
      */
     void RobotControl();    
+
 public:
     Bot(): safe(LeggedType::A1), udp(HIGHLEVEL){
         udp.InitCmdData(cmd);
@@ -67,7 +74,7 @@ public:
     /** 
      * Adds an instruction to walk forward.
      * @param distance Distance (in meters) to walk forward.
-     * @param v velocity Velocity of robot while walking.
+     * @param velocity Velocity of robot while walking.
      */
     void forward(float distance, float velocity);
 
