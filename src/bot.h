@@ -39,7 +39,7 @@ public:
     
     /** 
      * Adds an instruction to walk forward.
-     * @param d Distance (in meters) to walk forward.
+     * @param distance Distance (in meters) to walk forward.
      */
     void forward(float distance);
     void rotate(float theta);
