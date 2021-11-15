@@ -27,25 +27,35 @@ void Bot::execute() {
 void Bot::RobotControl() 
 {
     motiontime += 2;
-    udp.GetRecv(state);
-    int prev_end = 0;
-    for (Instruction i : instructions) {
-	auto out = i(state);
-	if (motiontime > prev_end && motiontime < prev_end + out.second) {
-	    cmd = out.first;
-	}
+    udp.GetRecv(state);   
+    InstructionData out;
+    if (!executing) {
+	out = instructions[index](state, state);
+	initial_state = state;
+	executing = true;
+    } else {
+        out = instructions[index](initial_state, state);
+    }    
+    if (!out.done) {
+	cmd = out.cmd;
+    } else {
+	executing = false;
+	index++;
     }
     udp.SetSend(cmd);
 }
 
-void Bot::forward(float d) {
+void Bot::forward(float d, float v) {
     instructions.push_back(
-        [d](HighState state) {
+        [d](HighState initial_state, HighState state) {
 	    HighCmd cmd {0};
 	    cmd.mode = 2;
 	    float v_0 = state.forwardSpeed;
 	    float t = d/v_0;
-	    return std::pair<HighCmd, double>(cmd, t);
+	    return InstructionData{cmd, true};
 	}
     );
+}
+
+void Bot::rotate(float theta) {
 }
