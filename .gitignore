@@ -1,0 +1,32 @@
+# walter-related files
+walter
+
+# CMake-related files
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
+build/
+
+# Doxygen-related files
+CMakeDoxyfile.in
+CMakeDoxygenDefaults.cmake
+docs/
+html/
+latex/
+
+# Misc other files
+.ccls-cache/
+.vscode/
+*~
+\#*\#
+auto-save-list
+.\#*
+.dir-locals.el
