@@ -2,6 +2,6 @@
 
 int main() {    
     Bot b{};
-    b.forward(5);
+    b.forward(5,2);
     b.execute();
 }
