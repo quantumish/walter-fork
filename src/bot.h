@@ -29,6 +29,7 @@ class Bot
     HighCmd cmd = {0}; //!< Command to issue to robot's UDP server.
     HighState state = {0}; //!< State recieved from robot's UDP server.
     HighState initial_state = {0}; //!< Initial state of current instruction. @see Bot::RobotControl
+    HighState true_initial_state = {0}; //!< Actual initial state of the robot used for defining a coordinate system.
     int motiontime = 0; //!< Amount of time that has passed.
     float dt = 0.002; //!< Timestep for threads. Allowed range: 0.001~0.01.   
     int index = 0; //!< Index of current instruction to execute.   
@@ -80,7 +81,8 @@ public:
 
     /**
      * Adds an instruction to rotate in place.
-     * @param theta Angle to rotate (in radians).
+     * @param theta Angle to rotate (in rad).
+     * @param omega Angular velocity (in rad/s).
      */
-    void rotate(float theta);    
+    void rotate(float theta, float omega);    
 };
