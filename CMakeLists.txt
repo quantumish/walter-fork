@@ -19,13 +19,14 @@ else()
 endif()
 
 find_package(lcm REQUIRED)
-find_package(Microsoft.GSL CONFIG)
-find_package(Eigen)
+
+include(./build/conanbuildinfo.cmake)
+conan_basic_setup()
 
 include_directories("unitree_legged_sdk/include")
 link_directories("unitree_legged_sdk/lib")
 set(CMAKE_CXX_FLAGS "-fPIC")
   
 add_executable(walter src/main.cpp src/bot.cpp)
-target_link_libraries(walter libunitree_legged_sdk_amd64.so lcm Microsoft.GSL::GSL)
+target_link_libraries(walter libunitree_legged_sdk_amd64.so lcm ${CONAN_LIBS})
 
