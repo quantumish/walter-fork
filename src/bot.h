@@ -2,13 +2,8 @@
 #include <functional>
 using namespace UNITREE_LEGGED_SDK;
 
-/**
- * Output of an instruction.
- */
-struct InstructionData {    
-    /** Command to execute. */
+struct InstructionOutput {    
     HighCmd cmd; 
-    /** Whether this instruction is done. */
     bool done;
 };
 
@@ -17,11 +12,8 @@ struct InstructionData {
  * and outputs a command for the current timestamp and whether the action is done. 
  * @see Bot::RobotControl()
  */
-using Instruction = std::function<InstructionData(HighState, HighState)>;
+using Instruction = std::function<InstructionOutput(HighState, HighState)>;
 
-/**
- * Class representing the Unitree A1.
- */
 class Bot
 {
     Safety safe; //!< Specifies operation mode?
