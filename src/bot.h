@@ -50,7 +50,12 @@ class Bot
      * Executes each instruction. 
      * Ran repeatedly in a thread at runtime. @see Bot::execute()
      */
-    void RobotControl();    
+    void RobotControl();
+
+    /** 
+     * Ensures a HighCmd is safe to run. 
+     */
+    bool validate_cmd(HighCmd cmd);    
 
 public:
     Bot(): safe(LeggedType::A1), udp(HIGHLEVEL){
@@ -67,14 +72,14 @@ public:
     /** 
      * Adds an instruction to walk forward.
      * @param distance Distance (in meters) to walk forward.
-     * @param velocity Velocity of robot while walking.
+     * @param velocity Velocity of robot while walking. -0.7 to 1 m/s.
      */
     void forward(float distance, float velocity);
 
     /**
      * Adds an instruction to rotate in place.
      * @param theta Angle to rotate (in rad).
-     * @param omega Angular velocity (in rad/s).
+     * @param omega Angular velocity (in rad/s). -2pi/3 to 2pi/3 rad/s.
      */
     void rotate(float theta, float omega);    
 };
