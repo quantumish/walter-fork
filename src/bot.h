@@ -1,7 +1,9 @@
 #include "unitree_legged_sdk/unitree_legged_sdk.h"
 #include <Eigen/Dense>
 #include <functional>
+#include <numbers>
 using namespace UNITREE_LEGGED_SDK;
+using namespace std::numbers;
 
 struct InstructionOutput {    
     HighCmd cmd; 
@@ -95,9 +97,10 @@ public:
      * Adds an instruction to move. Rotates first, does no strafing.
      * @param position Position to walk to in meters relative to robot.
      * @param velocity Velocity of robot while walking. -0.4 to 0.4 m/s.
+     * @param omega Magnitude of angular velocity (in rad/s). 0 to 2pi/3 rad/s.
      * @see Bot::move()
      */
-    void smooth_move(Eigen::Vector2d position, Eigen::Vector2d velocity);
+    void smooth_move(Eigen::Vector2d position, float velocity, float omega = 2*pi/3);
     
     void spline_move(); 
     
