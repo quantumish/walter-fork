@@ -12,6 +12,28 @@ void Bot::UDPSend() {
     udp.Send();
 }
 
+Eigen::Vector3f pyr_from_quaternion(float* quaternion) {
+    float qw = quaternion[0];
+    float qx = quaternion[1];
+    float qy = quaternion[2];
+    float qz = quaternion[3];
+    Eigen::Vector3f out;
+    out << static_cast<float>(atan2(2.0*(qy*qz + qw*qx), qw*qw - qx*qx - qy*qy + qz*qz)),
+	static_cast<float>(asin(-2.0*(qx*qz - qw*qy))),
+	static_cast<float>(atan2(2.0*(qx*qy + qw*qz), qw*qw + qx*qx - qy*qy - qz*qz));
+    return out;
+}
+
+Pose Bot::estimate_pose(Pose prev, a1::HighState state) {
+    return {
+	.position {
+	    state.forwardSpeed*dt + 0.5*state.imu.accelerometer[0]*(dt*dt),
+	    state.sideSpeed*dt + 0.5*state.imu.accelerometer[1]*(dt*dt)
+	},
+	.angle = pyr_from_quaternion(state.imu.quaternion)[1]-prev.angle,
+    };
+}
+
 // TODO: Prevent abuse of cmd.led and cmd.crc
 bool Bot::validate_cmd(a1::HighCmd cmd) {
     return
@@ -45,11 +67,11 @@ void Bot::RobotControl() {
     udp.GetRecv(state);
     InstructionOutput out;
     if (!executing) {
-	out = instructions[index](state, state);
-	initial_state = state;
+	initial_pose = {{0,0}, pyr_from_quaternion(state.imu.quaternion)[1]};
+	out = instructions[index](initial_pose, state);
 	executing = true;
     } else {
-	out = instructions[index](initial_state, state);
+	out = instructions[index](initial_pose, state);
     }
     if (!out.done) {
 	cmd = out.cmd;
@@ -63,9 +85,9 @@ void Bot::RobotControl() {
 void Bot::move_y(float d, float v) {
     Expects(v > -0.7 && v < 1);
     instructions.push_back(
-	[d, v](a1::HighState initial_state, a1::HighState state) {
+	[d, v](Pose initial, a1::HighState state) {
 	    a1::HighCmd cmd {0};
-	    cmd.mode = 2;	    
+	    cmd.mode = 2;
 	    (v < 0) ? cmd.forwardSpeed = v/0.7 : cmd.forwardSpeed = v;
 	    return InstructionOutput{cmd, true};
 	}
@@ -75,9 +97,9 @@ void Bot::move_y(float d, float v) {
 void Bot::move_x(float d, float v) {
     Expects(v > -0.4 && v < 0.4);
     instructions.push_back(
-	[d, v](a1::HighState initial_state, a1::HighState state) {
+	[d, v](Pose initial, a1::HighState state) {
 	    a1::HighCmd cmd {0};
-	    cmd.mode = 2;	    
+	    cmd.mode = 2;
 	    cmd.sideSpeed = v;
 	    return InstructionOutput{cmd, true};
 	}
@@ -87,9 +109,9 @@ void Bot::move_x(float d, float v) {
 void Bot::move(Eigen::Vector2f pos, Eigen::Vector2f v) {
     Expects((v[0] > -0.4 && v[0] < 0.4) && (v[1] > -0.7 && v[1] < 1));
     instructions.push_back(
-	[pos, v](a1::HighState initial_state, a1::HighState state) {
+	[pos, v](Pose initial, a1::HighState state) {
 	    a1::HighCmd cmd {0};
-	    cmd.mode = 2;	    
+	    cmd.mode = 2;
 	    cmd.sideSpeed = v[0];
 	    cmd.forwardSpeed = v[1];
 	    return InstructionOutput{cmd, true};
@@ -104,13 +126,10 @@ void Bot::smooth_move(Eigen::Vector2f pos, float v, float omega) {
     move_y(pos.norm(), v);
 }
 
-
-
-
 void Bot::set_led(std::vector<Eigen::Vector3i> lights) {
-    Expects(lights.size() == 4);       
+    Expects(lights.size() == 4);
     instructions.push_back(
-	[lights](a1::HighState initial_state, a1::HighState state) {
+	[lights](Pose initial, a1::HighState state) {
 	    a1::HighCmd cmd {0};
 	    for (int i = 0; i < 4; i++) {
 		// TODO avoid C-style cast.
@@ -121,28 +140,14 @@ void Bot::set_led(std::vector<Eigen::Vector3i> lights) {
     );
 }
 
-Eigen::Vector3f pyr_from_quaternion(float* quaternion) {
-    float qw = quaternion[0];
-    float qx = quaternion[1];
-    float qy = quaternion[2];
-    float qz = quaternion[3];
-    Eigen::Vector3f out;
-    out << static_cast<float>(atan2(2.0*(qy*qz + qw*qx), qw*qw - qx*qx - qy*qy + qz*qz)),
-	static_cast<float>(asin(-2.0*(qx*qz - qw*qy))),
-	static_cast<float>(atan2(2.0*(qx*qy + qw*qz), qw*qw + qx*qx - qy*qy - qz*qz));
-    return out;
-}
-
 void Bot::rotate(float theta, float omega) {
     Expects(-2*pi/3 < omega && omega < 2*pi/3);
     instructions.push_back(
-	[theta, omega](a1::HighState initial_state, a1::HighState state) {
+	[this, theta, omega](Pose initial, a1::HighState state) {
 	    a1::HighCmd cmd {0};
 	    cmd.mode = 1; // Maybe?
-	    cmd.rotateSpeed = omega / (2*pi/3);
-	    Eigen::Vector3f init_theta = pyr_from_quaternion(initial_state.imu.quaternion);
-	    Eigen::Vector3f cur_theta = pyr_from_quaternion(state.imu.quaternion);
-	    return (cur_theta[0]-init_theta[0] == theta) ?
+	    cmd.rotateSpeed = omega / (2*pi/3);	   	   
+	    return (estimate_pose(initial, state).angle == theta) ?
 		InstructionOutput{cmd, true} : InstructionOutput{cmd, false};
 	}
     );

@@ -3,6 +3,8 @@
 #include <Eigen/Dense>
 #include <functional>
 #include <numbers>
+#include "utils.h"
+
 namespace a1 = UNITREE_LEGGED_SDK;
 using std::numbers::pi;
 
@@ -16,7 +18,7 @@ struct InstructionOutput {
  * and outputs a command for the current timestamp and whether the action is done. 
  * @see Bot::RobotControl()
  */
-using Instruction = std::function<InstructionOutput(a1::HighState, a1::HighState)>;
+using Instruction = std::function<InstructionOutput(Pose, a1::HighState)>;
 
 class Bot
 {
@@ -24,8 +26,7 @@ class Bot
     a1::UDP udp; //!< UDP struct that stores payloads to send/recv.
     a1::HighCmd cmd = {0}; //!< Command to issue to robot's UDP server.
     a1::HighState state = {0}; //!< State recieved from robot's UDP server.
-    a1::HighState initial_state = {0}; //!< Initial state of current instruction. @see Bot::RobotControl
-    a1::HighState true_initial_state = {0}; //!< Actual initial state of the robot used for defining a coordinate system.
+    Pose initial_pose; //!< Initial pose of current instruction. @see Bot::RobotControl
     int motiontime = 0; //!< Amount of time that has passed.
     float dt = 0.002; //!< Timestep for threads. Allowed range: 0.001~0.01.   
     int index = 0; //!< Index of current instruction to execute.   
@@ -56,6 +57,10 @@ class Bot
      */
     void RobotControl();
 
+    /**
+     * Guesses current position.
+     */
+    Pose estimate_pose(Pose prev, a1::HighState state);
     /** 
      * Ensures a HighCmd is safe to run. 
      */
@@ -101,7 +106,7 @@ public:
      * @param omega Magnitude of angular velocity (in rad/s). 0 to 2pi/3 rad/s.
      * @see Bot::move()
      */
-    void smooth_move(Eigen::Vector2f position, float velocity, float omega = 2*pi/3);
+    void smooth_move(Eigen::Vector2f position, float velocity, float omega = 1*pi/3);
     
     void spline_move(); 
     
