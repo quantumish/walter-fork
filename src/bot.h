@@ -1,12 +1,13 @@
+#pragma once
 #include "unitree_legged_sdk/unitree_legged_sdk.h"
 #include <Eigen/Dense>
 #include <functional>
 #include <numbers>
-using namespace UNITREE_LEGGED_SDK;
-using namespace std::numbers;
+namespace a1 = UNITREE_LEGGED_SDK;
+using std::numbers::pi;
 
 struct InstructionOutput {    
-    HighCmd cmd; 
+    a1::HighCmd cmd; 
     bool done;
 };
 
@@ -15,16 +16,16 @@ struct InstructionOutput {
  * and outputs a command for the current timestamp and whether the action is done. 
  * @see Bot::RobotControl()
  */
-using Instruction = std::function<InstructionOutput(HighState, HighState)>;
+using Instruction = std::function<InstructionOutput(a1::HighState, a1::HighState)>;
 
 class Bot
 {
-    Safety safe; //!< Specifies operation mode?
-    UDP udp; //!< UDP struct that stores payloads to send/recv.
-    HighCmd cmd = {0}; //!< Command to issue to robot's UDP server.
-    HighState state = {0}; //!< State recieved from robot's UDP server.
-    HighState initial_state = {0}; //!< Initial state of current instruction. @see Bot::RobotControl
-    HighState true_initial_state = {0}; //!< Actual initial state of the robot used for defining a coordinate system.
+    a1::Safety safe; //!< Specifies operation mode?
+    a1::UDP udp; //!< UDP struct that stores payloads to send/recv.
+    a1::HighCmd cmd = {0}; //!< Command to issue to robot's UDP server.
+    a1::HighState state = {0}; //!< State recieved from robot's UDP server.
+    a1::HighState initial_state = {0}; //!< Initial state of current instruction. @see Bot::RobotControl
+    a1::HighState true_initial_state = {0}; //!< Actual initial state of the robot used for defining a coordinate system.
     int motiontime = 0; //!< Amount of time that has passed.
     float dt = 0.002; //!< Timestep for threads. Allowed range: 0.001~0.01.   
     int index = 0; //!< Index of current instruction to execute.   
@@ -58,10 +59,10 @@ class Bot
     /** 
      * Ensures a HighCmd is safe to run. 
      */
-    bool validate_cmd(HighCmd cmd);    
+    bool validate_cmd(a1::HighCmd cmd);    
 
 public:
-    Bot(): safe(LeggedType::A1), udp(HIGHLEVEL){
+    Bot(): safe(a1::LeggedType::A1), udp(a1::HIGHLEVEL){
         udp.InitCmdData(cmd);
     }
 
@@ -91,7 +92,7 @@ public:
      * @param position Position to walk to in meters relative to robot.
      * @param velocity Velocity of robot while walking. -0.4 to 0.4 m/s.
      */    
-    void move(Eigen::Vector2d position, Eigen::Vector2d velocity);
+    void move(Eigen::Vector2f position, Eigen::Vector2f velocity);
 
     /** 
      * Adds an instruction to move. Rotates first, does no strafing.
@@ -100,7 +101,7 @@ public:
      * @param omega Magnitude of angular velocity (in rad/s). 0 to 2pi/3 rad/s.
      * @see Bot::move()
      */
-    void smooth_move(Eigen::Vector2d position, float velocity, float omega = 2*pi/3);
+    void smooth_move(Eigen::Vector2f position, float velocity, float omega = 2*pi/3);
     
     void spline_move(); 
     

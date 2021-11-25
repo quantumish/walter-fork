@@ -2,13 +2,7 @@
 #include <Eigen/Dense>
 #include <boost/contract.hpp>
 #include "bot.h"
-
-// Abuse of macros.
-#define CONCAT(a, b) CONCAT_INNER(a, b)
-#define CONCAT_INNER(a, b) a ## b
-#define Expects(x) boost::contract::check CONCAT(contract, __COUNTER__) = boost::contract::function().precondition([&] { BOOST_CONTRACT_ASSERT(x); })
-#define Ensures(x) boost::contract::check CONCAT(contract, __COUNTER__) = boost::contract::function().postcondition([&] { BOOST_CONTRACT_ASSERT(x); })
-#define sgn(x) (x > 0) - (x < 0)
+#include "utils.h"
 
 void Bot::UDPRecv() {
     udp.Recv();
@@ -18,9 +12,8 @@ void Bot::UDPSend() {
     udp.Send();
 }
 
-
 // TODO: Prevent abuse of cmd.led and cmd.crc
-bool Bot::validate_cmd(HighCmd cmd) {
+bool Bot::validate_cmd(a1::HighCmd cmd) {
     return
 	cmd.levelFlag == 0x00 &&
 	(cmd.mode == 1 || cmd.mode == 2) &&
@@ -34,9 +27,9 @@ bool Bot::validate_cmd(HighCmd cmd) {
 }
 
 void Bot::execute() {
-    LoopFunc loop_control("control_loop", dt, boost::bind(&Bot::RobotControl, this));
-    LoopFunc loop_udpSend("udp_send", dt, 3, boost::bind(&Bot::UDPSend, this));
-    LoopFunc loop_udpRecv("udp_recv", dt, 3, boost::bind(&Bot::UDPRecv, this));
+    a1::LoopFunc loop_control("control_loop", dt, boost::bind(&Bot::RobotControl, this));
+    a1::LoopFunc loop_udpSend("udp_send", dt, 3, boost::bind(&Bot::UDPSend, this));
+    a1::LoopFunc loop_udpRecv("udp_recv", dt, 3, boost::bind(&Bot::UDPRecv, this));
 
     loop_udpSend.start();
     loop_udpRecv.start();
@@ -70,8 +63,8 @@ void Bot::RobotControl() {
 void Bot::move_y(float d, float v) {
     Expects(v > -0.7 && v < 1);
     instructions.push_back(
-	[d, v](HighState initial_state, HighState state) {
-	    HighCmd cmd {0};
+	[d, v](a1::HighState initial_state, a1::HighState state) {
+	    a1::HighCmd cmd {0};
 	    cmd.mode = 2;	    
 	    (v < 0) ? cmd.forwardSpeed = v/0.7 : cmd.forwardSpeed = v;
 	    return InstructionOutput{cmd, true};
@@ -82,8 +75,8 @@ void Bot::move_y(float d, float v) {
 void Bot::move_x(float d, float v) {
     Expects(v > -0.4 && v < 0.4);
     instructions.push_back(
-	[d, v](HighState initial_state, HighState state) {
-	    HighCmd cmd {0};
+	[d, v](a1::HighState initial_state, a1::HighState state) {
+	    a1::HighCmd cmd {0};
 	    cmd.mode = 2;	    
 	    cmd.sideSpeed = v;
 	    return InstructionOutput{cmd, true};
@@ -91,11 +84,11 @@ void Bot::move_x(float d, float v) {
     );
 }
 
-void Bot::move(Eigen::Vector2d pos, Eigen::Vector2d v) {
+void Bot::move(Eigen::Vector2f pos, Eigen::Vector2f v) {
     Expects((v[0] > -0.4 && v[0] < 0.4) && (v[1] > -0.7 && v[1] < 1));
     instructions.push_back(
-	[pos, v](HighState initial_state, HighState state) {
-	    HighCmd cmd {0};
+	[pos, v](a1::HighState initial_state, a1::HighState state) {
+	    a1::HighCmd cmd {0};
 	    cmd.mode = 2;	    
 	    cmd.sideSpeed = v[0];
 	    cmd.forwardSpeed = v[1];
@@ -104,21 +97,24 @@ void Bot::move(Eigen::Vector2d pos, Eigen::Vector2d v) {
     );
 }
 
-void Bot::smooth_move(Eigen::Vector2d pos, float v, float omega) {
+void Bot::smooth_move(Eigen::Vector2f pos, float v, float omega) {
     Expects((v > -0.7 && v < 1) && (-2*pi/3 < omega && omega < 2*pi/3));
     float theta = atan(pos[1]/pos[0]);
     rotate(theta, sgn(theta)*omega);
     move_y(pos.norm(), v);
 }
 
+
+
+
 void Bot::set_led(std::vector<Eigen::Vector3i> lights) {
     Expects(lights.size() == 4);       
     instructions.push_back(
-	[lights](HighState initial_state, HighState state) {
-	    HighCmd cmd {0};
+	[lights](a1::HighState initial_state, a1::HighState state) {
+	    a1::HighCmd cmd {0};
 	    for (int i = 0; i < 4; i++) {
 		// TODO avoid C-style cast.
-		cmd.led[i] = *(LED*)lights[i].data();
+		cmd.led[i] = *(a1::LED*)lights[i].data();
 	    }
 	    return InstructionOutput{cmd, true};
 	}
@@ -140,8 +136,8 @@ Eigen::Vector3f pyr_from_quaternion(float* quaternion) {
 void Bot::rotate(float theta, float omega) {
     Expects(-2*pi/3 < omega && omega < 2*pi/3);
     instructions.push_back(
-	[theta, omega](HighState initial_state, HighState state) {
-	    HighCmd cmd {0};
+	[theta, omega](a1::HighState initial_state, a1::HighState state) {
+	    a1::HighCmd cmd {0};
 	    cmd.mode = 1; // Maybe?
 	    cmd.rotateSpeed = omega / (2*pi/3);
 	    Eigen::Vector3f init_theta = pyr_from_quaternion(initial_state.imu.quaternion);
