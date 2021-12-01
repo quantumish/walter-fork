@@ -4,6 +4,14 @@
 ## About
 A high level API to controlling a Unitree A1 robot.
 
+## Installing
+Clone the repository and its submodules: 
+```
+git clone https://github.com/RoboticsTeam4904/walter.git
+git submodule init
+git submodule update
+```
+
 ## Building
 This project depends on `lcm` and the Conan package manager. It will only compile on Linux machines as the Unitree SDK is solely in the form of a specifc static object file and cannot be linked properly on other operating systems do to its format. 
 

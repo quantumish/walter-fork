@@ -16,26 +16,26 @@ struct Pose {
 };
 
 enum Level {
-    LOWLEVEL = 0xFF,
-    HIGHLEVEL = 0x00,
+    LOWLEVEL = 0xFF, //<! Control over individual motors 
+    HIGHLEVEL = 0x00, //<! Higher level operations like walking and "forward" 
 };
 
 struct State {
     Level level;
     struct RobotInfo {
 	uint16_t id;
-	uint32_t sn;
-	uint8_t bandwidth;
+	uint32_t sn; 
+	uint8_t bandwidth; 
 	uint8_t mode;
     } robot_info;
     struct PosInfo {
 	float forward_speed;
 	float side_speed;
 	float rotate_speed;
-	float updown_speed;
-	float body_height;
-	float forward_pos;
-	float side_pos;
+	float updown_speed; 
+	float body_height; 
+	float forward_pos; //!< Front/rear displacement integrated from speed info on the robot.
+	float side_pos; //!< Left/right displacement integrated from speed info on the robot.
     } pos_info;
     struct FootInfo {
 	std::array<float, 3> foot_pos[4];
