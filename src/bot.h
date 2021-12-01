@@ -77,6 +77,11 @@ public:
      * Only call when all instructions have been specified.
      */
     void execute();
+
+    /**
+     * @returns state of the robot represented as a State.
+     */
+    State get_state();
     
     /** 
      * Adds an instruction to move in the x direction.
