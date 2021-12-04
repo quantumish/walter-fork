@@ -20,27 +20,28 @@ enum Level {
     HIGHLEVEL = 0x00, //<! Higher level operations like walking and "forward" 
 };
 
+struct RobotInfo {
+    uint16_t id;
+    uint32_t sn;  //<! Isn't documented.
+    uint8_t bandwidth; 
+    uint8_t mode; //<! Isn't documented.
+};
+
 struct State {
     Level level;
     struct RobotInfo {
 	uint16_t id;
-	uint32_t sn; 
+	uint32_t sn;  //<! Isn't documented.
 	uint8_t bandwidth; 
-	uint8_t mode;
-    } robot_info;
+	uint8_t mode; //<! Isn't documented.
+    } bot_info;
     struct PosInfo {
 	float forward_speed;
 	float side_speed;
 	float rotate_speed;
-	float updown_speed; 
-	float body_height; 
+	float updown_speed;
+	float body_height;
 	float forward_pos; //!< Front/rear displacement integrated from speed info on the robot.
 	float side_pos; //!< Left/right displacement integrated from speed info on the robot.
     } pos_info;
-    struct FootInfo {
-	std::array<float, 3> foot_pos[4];
-	std::array<float, 3> foot_speed[4];
-	int16_t foot_force[4];
-	int16_t foot_force_est[4];	
-    } foot_info;    
 };

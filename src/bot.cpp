@@ -13,21 +13,15 @@ void Bot::UDPSend() {
 }
 
 State Bot::get_state() {
-    std::array<float, 3> foot_pos; 
-    std::copy(std::begin(state.footPosition2Body), 
-	      std::end(state.footPosition2Body), std::begin(foot_pos));
-    std::array<float, 3> foot_speed; 
-    std::copy(std::begin(state.footSpeed2Body), 
-	      std::end(state.footSpeed2Body), std::begin(foot_speed));
     return {
 	.level = Level::HIGHLEVEL,
-	.bot_info {
+	.bot_info = {
 	    .id = state.robotID, 
 	    .sn = state.SN,
-	    .bandwidth = state.bandwidth,
+	    .bandwidth = state.bandWidth,
 	    .mode = state.mode,
 	},
-	.pos_info {
+	.pos_info = {
 	    .forward_speed = state.forwardSpeed,
 	    .side_speed = state.sideSpeed,
 	    .rotate_speed = state.rotateSpeed,
@@ -35,14 +29,8 @@ State Bot::get_state() {
 	    .body_height = state.bodyHeight,
 	    .forward_pos = state.forwardPosition,
 	    .side_pos = state.sidePosition,	    
-	}, 
-	.foot_info {
-	    .foot_pos = foot_pos, 
-	    .foot_speed = foot_speed,
-	    .foot_force = state.footForce,
-	    .foot_force_est = state.footForceEst,
 	},
-    }
+    };
 }
 
 Eigen::Vector3f pyr_from_quaternion(float* quaternion) {
@@ -91,11 +79,6 @@ void Bot::execute() {
     loop_control.start();
 
     while (true) {
-	std::cout << udp.state.SendError << " "
-		  << udp.state.FlagError << " "
-		  << udp.state.RecvCRCError << " "
-		  << udp.state.RecvLoseError << " "
-		  << "\n";
 	sleep(1);
     }
 }
