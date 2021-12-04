@@ -2,6 +2,3 @@
 	path = unitree_legged_sdk
 	url = https://github.com/unitreerobotics/unitree_legged_sdk.git
 	branch = v3.2
-[submodule "doxygen-awesome-css"]
-	path = doxygen-awesome-css
-	url = https://github.com/jothepro/doxygen-awesome-css.git

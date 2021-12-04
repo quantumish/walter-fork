@@ -34,7 +34,7 @@ A sample usage would look like:
 int main() {
 	Bot bot{};
 	bot.move_y(5, 0.2);
-    bot.smooth_move({4,3}, 3);
+	bot.smooth_move({4,3}, 3);
 	bot.execute();	
 }
 ```
