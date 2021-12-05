@@ -13,10 +13,11 @@ git submodule update
 ```
 
 ## Building
-This project depends on `lcm` and the Conan package manager. It will only compile on Linux machines as the Unitree SDK is solely in the form of a specifc static object file and cannot be linked properly on other operating systems do to its format. 
+This project depends on `lcm` and the Conan package manager. It will only compile on Linux machines as the Unitree SDK is solely in the form of a specifi c static object file and cannot be linked properly on other operating systems do to its format. 
 
 ```
 mkdir build && cd build
+conan create ../lcm-recipe/ -o lcm:shared=True
 conan install .. --build
 cmake ..
 make -C ..
