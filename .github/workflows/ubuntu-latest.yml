@@ -31,23 +31,20 @@ jobs:
           git submodule update
     
       - name: setup
-        run: |
-          mkdir build
-          cd build
+        run: mkdir build       
       
       - name: conan
+        working-directory: ./build
         run: |
           pip install conan
-          pwd
           conan create ../lcm-recipe/ -o lcm:shared=True
           conan install .. --build
 
       - name: build
+        working-directory: ./build
         run: | 
           cmake ..
           make -C ..
           
       - name: run
-        run: | 
-          cd ..
-          timeout 5 bin/walter
+        run: timeout 5 bin/walter
