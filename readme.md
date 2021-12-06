@@ -3,7 +3,8 @@
 </p>
 <h1 align="center">walter</h1>
 <div align="center" style="text-align:center;">
-	A high level API to controlling a Unitree A1 robot.
+	A high level API to controlling a Unitree A1 robot.<br>
+	<img src="https://img.shields.io/github/workflow/status/RoboticsTeam4904/walter/ubuntu-latest"> <img src="https://img.shields.io/maintenance/yes/2021">
 </div>
 
 ## Installing
