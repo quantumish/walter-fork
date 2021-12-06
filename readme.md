@@ -1,5 +1,9 @@
+<p align="center">
+<img src="https://i.imgur.com/G4j0Xuj.jpeg">
+</p>
 
-# walter 
+<h1 align="center">walter</h1>
+
 
 ## About
 A high level API to controlling a Unitree A1 robot.
