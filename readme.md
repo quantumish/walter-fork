@@ -7,7 +7,7 @@
 	<img src="https://img.shields.io/github/workflow/status/RoboticsTeam4904/walter/ubuntu-latest"> <img src="https://img.shields.io/maintenance/yes/2021">
 </div>
 
-## Installing
+<h2>Installing</h2>
 Clone the repository and its submodules:
 ```
 git clone https://github.com/RoboticsTeam4904/walter.git
@@ -15,7 +15,7 @@ git submodule init
 git submodule update
 ```
 
-## Building
+<h2>Building</h2>
 This project depends on the Conan package manager. It will only compile on Linux machines as the Unitree SDK is solely in the form of a specific static object file and cannot be linked properly on other operating systems do to its format.
 
 ```
@@ -28,7 +28,7 @@ make -C ..
 
 The binary is then located at `bin/walter` and documentation at `docs/html/index.html`.
 
-## Usage
+<h2>Usage</h2>
 After initializing the `Bot` class, specify a series of commands through its members. These commands are *not* run in real time, but run sequentially as soon as `Bot::execute()` is called.
 
 A sample usage would look like:
@@ -38,7 +38,7 @@ A sample usage would look like:
 int main() {
 	Bot bot{};
 	bot.move_y(5, 0.2);
-	bot.smooth_move({4,3}, 3);
+	b.rotate(pi/10, pi/3);
 	bot.execute();
 }
 ```

@@ -4,6 +4,6 @@
 int main() {
     Bot b{};
     b.move_y(2, 0.5);
-    b.smooth_move({4,3}, 0.1);
-    b.execute();
+    b.rotate(0.1*pi, pi/3);
+    b.execute();    
 }

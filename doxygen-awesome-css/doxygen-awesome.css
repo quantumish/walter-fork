@@ -153,7 +153,7 @@ html {
     /* height of an item in any tree / collapsable table */
     --tree-item-height: 30px;
 
-    --darkmode-toggle-button-icon: '☀️'
+    --darkmode-toggle-button-icon: '☼'
 }
 
 @media screen and (max-width: 767px) {
@@ -207,7 +207,7 @@ html {
         --bug-color-dark: #812a00;
         --bug-color-darker: #ffd3be;
 
-        --darkmode-toggle-button-icon: '🌛';
+        --darkmode-toggle-button-icon: '☽';
     }
 }
 
@@ -253,7 +253,7 @@ html.dark-mode {
     --bug-color-dark: #812a00;
     --bug-color-darker: #ffd3be;
 
-    --darkmode-toggle-button-icon: '🌛';
+    --darkmode-toggle-button-icon: '☽';
 }
 
 body {
