@@ -1,6 +1,7 @@
 #include <cmath>
 #include <Eigen/Dense>
 #include <boost/contract.hpp>
+#include <unistd.h>
 #include "bot.h"
 #include "utils.h"
 
@@ -77,10 +78,10 @@ void Bot::execute() {
     loop_udpSend.start();
     loop_udpRecv.start();
     loop_control.start();
-
-    while (true) {
-	sleep(1);
-    }
+    sleep(5);
+    loop_udpSend.shutdown();
+    loop_udpRecv.shutdown();
+    loop_control.shutdown();
 }
 
 void Bot::RobotControl() {

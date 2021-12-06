@@ -51,4 +51,4 @@ jobs:
           
       - name: run
         working-directory: ./build
-        run: timeout 5 bin/walter
+        run: bin/walter
