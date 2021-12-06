@@ -9,6 +9,7 @@
 
 <h2>Installing</h2>
 Clone the repository and its submodules:
+
 ```
 git clone https://github.com/RoboticsTeam4904/walter.git
 git submodule init
@@ -38,7 +39,7 @@ A sample usage would look like:
 int main() {
 	Bot bot{};
 	bot.move_y(5, 0.2);
-	b.rotate(pi/10, pi/3);
+	bot.rotate(pi/10, pi/3);
 	bot.execute();
 }
 ```
