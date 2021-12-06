@@ -38,6 +38,7 @@ jobs:
       - name: conan
         run: |
           pip install conan
+          pwd
           conan create ../lcm-recipe/ -o lcm:shared=True
           conan install .. --build
 
