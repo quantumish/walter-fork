@@ -44,7 +44,7 @@ jobs:
         working-directory: ./build
         run: | 
           cmake ..
-          make -C ..
+          make
           
       - name: run
         run: timeout 5 bin/walter
