@@ -31,8 +31,11 @@ jobs:
           git submodule update
     
       - name: setup
-        run: mkdir build       
-      
+        run: |
+          mkdir build       
+          apt install gcc-10 gcc-10-base gcc-10-doc g++-10
+          apt install libstdc++-10-dev libstdc++-10-doc
+        
       - name: conan
         working-directory: ./build
         run: |
