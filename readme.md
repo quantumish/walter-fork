@@ -1,15 +1,13 @@
 <p align="center">
-<img src="https://i.imgur.com/G4j0Xuj.jpeg">
+<img src="https://i.imgur.com/G4j0Xuj.jpeg" style="margin-left: auto; margin-right: auto; display: block;">
 </p>
-
 <h1 align="center">walter</h1>
-
-
-## About
-A high level API to controlling a Unitree A1 robot.
+<div align="center" style="text-align:center;">
+	A high level API to controlling a Unitree A1 robot.
+</div>
 
 ## Installing
-Clone the repository and its submodules: 
+Clone the repository and its submodules:
 ```
 git clone https://github.com/RoboticsTeam4904/walter.git
 git submodule init
@@ -17,7 +15,7 @@ git submodule update
 ```
 
 ## Building
-This project depends on the Conan package manager. It will only compile on Linux machines as the Unitree SDK is solely in the form of a specifi c static object file and cannot be linked properly on other operating systems do to its format. 
+This project depends on the Conan package manager. It will only compile on Linux machines as the Unitree SDK is solely in the form of a specific static object file and cannot be linked properly on other operating systems do to its format.
 
 ```
 mkdir build && cd build
@@ -40,6 +38,6 @@ int main() {
 	Bot bot{};
 	bot.move_y(5, 0.2);
 	bot.smooth_move({4,3}, 3);
-	bot.execute();	
+	bot.execute();
 }
 ```
