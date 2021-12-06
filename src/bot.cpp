@@ -71,8 +71,8 @@ bool Bot::validate_cmd(a1::HighCmd cmd) {
 
 void Bot::execute() {
     a1::LoopFunc loop_control("control_loop", dt, boost::bind(&Bot::RobotControl, this));
-    a1::LoopFunc loop_udpSend("udp_send", dt, 3, boost::bind(&Bot::UDPSend, this));
-    a1::LoopFunc loop_udpRecv("udp_recv", dt, 3, boost::bind(&Bot::UDPRecv, this));
+    a1::LoopFunc loop_udpSend("udp_send", dt, boost::bind(&Bot::UDPSend, this));
+    a1::LoopFunc loop_udpRecv("udp_recv", dt, boost::bind(&Bot::UDPRecv, this));
 
     loop_udpSend.start();
     loop_udpRecv.start();
