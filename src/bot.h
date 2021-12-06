@@ -2,11 +2,11 @@
 #include "unitree_legged_sdk/unitree_legged_sdk.h"
 #include <Eigen/Dense>
 #include <functional>
-#include <numbers>
+#include <cmath>
 #include "utils.h"
 
 namespace a1 = UNITREE_LEGGED_SDK;
-using std::numbers::pi;
+constexpr double pi = M_PI;
 
 struct InstructionOutput {    
     a1::HighCmd cmd; 

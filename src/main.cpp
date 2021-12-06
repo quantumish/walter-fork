@@ -1,7 +1,5 @@
-#include <numbers>
 #include <iostream>
 #include "bot.h"
-using std::numbers::pi;
 
 int main() {
     Bot b{};
