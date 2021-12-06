@@ -50,4 +50,5 @@ jobs:
           make
           
       - name: run
+        working-directory: ./build
         run: timeout 5 bin/walter
