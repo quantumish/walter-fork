@@ -18,8 +18,6 @@ else()
   message("Doxygen not found.")
 endif()
 
-find_package(lcm REQUIRED)
-
 include(./build/conanbuildinfo.cmake)
 conan_basic_setup()
 
